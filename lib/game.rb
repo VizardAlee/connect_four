@@ -66,8 +66,8 @@ class Game
     end
   end
 
-  def turn
-    until board.board_full?
+  def turn(board = @board)
+    until board.check_row(@player2.color_piece) || board.check_row(@player1.color_piece) || board.board_full?
       puts "Make a move #{player1.name}"
       player1_turn
       puts "Make a move #{player2.name}"

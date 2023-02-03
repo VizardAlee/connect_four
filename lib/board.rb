@@ -47,7 +47,16 @@ class Board
     puts '------------------------------------'
   end
 
-  # winning condition
-  # this occurs when there is a lineup of four of the same piece
-  # whether vertically, horizontally or diagonally
+  # check if there are four consecutive pieces of the same color in a row
+  def check_row(color)
+    @board.each do |row|
+      if row.each_cons(4).any? { |group| group.all?(color) }
+        return true
+      else
+        return false
+      end
+    end
+  end
+  # check if there are four consecutive pieces of the same color in a column
+  # check if there are four consecutive pieces of the same color in a diagonal
 end
