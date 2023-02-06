@@ -38,10 +38,8 @@ class Game
     puts "#{player1.name}'s piece is #{player1.color_piece} and #{player2.name}'s piece is #{player2.color_piece}"
   end
 
-  def player1_turn(board = @board, col = @player1.move, choice = [])
+  def player1_turn(col, board = @board, choice = [])
     @player1.insert_col(board, col)
-    choice << col
-    col = choice.join.to_i
     if board.column_full?(col)
       board.layout
       puts "Column '#{col + 1}' is full! Choose another column or loose your turn #{player2.name}"
@@ -52,10 +50,9 @@ class Game
     end
   end
 
-  def player2_turn(board = @board, col = @player2.move, choice = [])
+  def player2_turn(col, board = @board, choice = [])
     @player2.insert_col(board, col)
-    choice << col
-    col = choice.join.to_i
+
     if board.column_full?(col)
       board.layout
       puts "Column '#{col + 1}' is full! Choose another column or loose your turn #{player1.name}"
@@ -66,12 +63,29 @@ class Game
     end
   end
 
+  def p1_move(col = player1.move, color = player1.color_piece, choice = [])
+    choice << col
+    col = choice.join.to_i
+    return 'Woo' if board.check_win(col, color)
+
+    player1_turn(col)
+  end
+
+  def p2_move(col = player2.move, color = player2.color_piece, choice = [])
+    choice << col
+    col = choice.join.to_i
+    return 'Win!' if board.check_win(col, color)
+
+    player2_turn(col)
+  end
+
   def turn(board = @board)
-    until board.check_row(@player2.color_piece) || board.check_row(@player1.color_piece) || board.board_full?
+    until board.board_full?
       puts "Make a move #{player1.name}"
-      player1_turn
+      return "#{player1.name} Wins" if p1_move(player1.move) == 'Woo'
+
       puts "Make a move #{player2.name}"
-      player2_turn
+      return "#{player2.name} Wins" if p2_move(player2.move) == 'Win!'
     end
     puts 'Game Over'
   end

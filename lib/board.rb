@@ -48,15 +48,34 @@ class Board
   end
 
   # check if there are four consecutive pieces of the same color in a row
-  def check_row(color)
-    @board.each do |row|
-      if row.each_cons(4).any? { |group| group.all?(color) }
-        return true
-      else
-        return false
-      end
+  def check_row(color = 'X', board = @board, length = @board.length - 1)
+    return false if length.negative?
+
+    section = board[length]
+    tester = section.each_cons(4).any? { |group| group.all?(color) }
+    return true if tester == true
+
+    check_row(color, board, length - 1)
+  end
+
+  # check if there are four consecutive pieces of the same color in a column
+  def check_column(col, color)
+    column = @board.map { |row| row[col] }
+    if column.each_cons(4).any? { |group| group.all?(color) }
+      return true
+    else
+      return false
     end
   end
-  # check if there are four consecutive pieces of the same color in a column
-  # check if there are four consecutive pieces of the same color in a diagonal
+
+  def check_win(col, color)
+    if check_row(color) == true
+      return true
+    elsif check_column(col, color) == true
+      return true
+    else
+      false
+    end
+    # return true if check_diagonal(col, color)
+  end
 end
