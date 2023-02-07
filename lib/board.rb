@@ -34,17 +34,17 @@ class Board
 
   def layout
     puts "| #{board[0][0]} | #{board[0][1]} | #{board[0][2]} | #{board[0][3]} | #{board[0][4]} | #{board[0][5]} | #{board[0][6]} |"
-    puts '-----+----+----+----+----+----+-----'
+    puts '----+---+---+---+---+---+----'
     puts "| #{board[1][0]} | #{board[1][1]} | #{board[1][2]} | #{board[1][3]} | #{board[1][4]} | #{board[1][5]} | #{board[1][6]} |"
-    puts '-----+----+----+----+----+----+-----'
+    puts '----+---+---+---+---+---+----'
     puts "| #{board[2][0]} | #{board[2][1]} | #{board[2][2]} | #{board[2][3]} | #{board[2][4]} | #{board[2][5]} | #{board[2][6]} |"
-    puts '-----+----+----+----+----+----+-----'
+    puts '----+---+---+---+---+---+----'
     puts "| #{board[3][0]} | #{board[3][1]} | #{board[3][2]} | #{board[3][3]} | #{board[3][4]} | #{board[3][5]} | #{board[3][6]} |"
-    puts '-----+----+----+----+----+----+-----'
+    puts '----+---+---+---+---+---+----'
     puts "| #{board[4][0]} | #{board[4][1]} | #{board[4][2]} | #{board[4][3]} | #{board[4][4]} | #{board[4][5]} | #{board[4][6]} |"
-    puts '-----+----+----+----+----+----+-----'
+    puts '----+---+---+---+---+---+----'
     puts "| #{board[5][0]} | #{board[5][1]} | #{board[5][2]} | #{board[5][3]} | #{board[5][4]} | #{board[5][5]} | #{board[5][6]} |"
-    puts '------------------------------------'
+    puts '-----------------------------'
   end
 
   # check if there are four consecutive pieces of the same color in a row
@@ -68,14 +68,71 @@ class Board
     end
   end
 
+  # check if there are four consecutive pieces of the same color in a diagonal
+  def check_diagonal(color, board = @board)
+    (0...board.size).each do |row|
+      (0...board[0].size).each do |col|
+        return true if check_cell_diagonal_win(board, row, col, color)
+      end
+    end
+  end
+
+  def check_cell_diagonal_win(board, row, col, color)
+    win_length = 4
+    # check positively sloped diagonal
+    d_row, d_col = -1, -1
+    count = 0
+    while row + d_row >= 0 && row + d_row < board.size &&
+          col + d_col >= 0 && col + d_col < board[0].size &&
+          board[row + d_row][col + d_col] == color
+      count += 1 
+      d_row -= 1
+      d_col -= 1
+    end
+
+    d_row, d_col = 1, 1
+    while row + d_row >= 0 && row + d_row < board.size &&
+          col + d_col >= 0 && col + d_col < board[0].size &&
+          board[row + d_row][col + d_col] == color
+      count += 1
+      d_row += 1
+      d_col += 1
+    end
+
+    return true if count >= win_length
+
+    # check negatively sloped diagonal
+    d_row, d_col = -1, 1
+    count = 0
+    while row + d_row >= 0 && row + d_row < board.size &&
+          col + d_col >= 0 && col + d_col < board[0].size &&
+          board[row + d_row][col + d_col] == color
+      count += 1
+      d_row -= 1
+      d_col += 1
+    end
+
+    d_row, d_col = 1, -1
+    while row + d_row >= 0 && row + d_row < board.size &&
+          col + d_col >= 0 && col + d_col < board[0].size &&
+          board[row + d_row][col + d_col] == color
+      count += 1
+      d_row += 1
+      d_col -= 1
+    end
+
+    return true if count >= win_length
+  end
+
   def check_win(col, color)
     if check_row(color) == true
       return true
     elsif check_column(col, color) == true
       return true
+    elsif check_diagonal(color) == true
+      return true
     else
       false
     end
-    # return true if check_diagonal(col, color)
   end
 end
