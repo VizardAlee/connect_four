@@ -113,6 +113,7 @@ class Game
     create_player
     choose_piece
     puts "#{player1.name}'s piece is #{player1.color_piece} and #{player2.name}'s piece is #{player2.color_piece}"
+    @board.layout
     turn
     puts 'Game Over!'
   end
