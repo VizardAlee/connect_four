@@ -2,11 +2,12 @@
 
 # putting everything together in game class
 class Game
-  attr_accessor :board, :player1, :player2, :mover
+  attr_accessor :board, :player1, :player2, :mover, :over
 
   def initialize
     @board = Board.new
     @mover = ''
+    @over = false
   end
 
   # prompt players to choose pieces
@@ -38,55 +39,60 @@ class Game
     puts "#{player1.name}'s piece is #{player1.color_piece} and #{player2.name}'s piece is #{player2.color_piece}"
   end
 
-  def player1_turn(col, board = @board, choice = [])
+  def player1_turn(col, board = @board, color = player1.color_piece)
     @player1.insert_col(board, col)
     if board.column_full?(col)
-      board.layout
       puts "Column '#{col + 1}' is full! Choose another column or loose your turn #{player2.name}"
-      @mover = false
-    else
-      @mover = true
-      board.layout
     end
-  end
-
-  def player2_turn(col, board = @board, choice = [])
-    @player2.insert_col(board, col)
-
-    if board.column_full?(col)
-      board.layout
-      puts "Column '#{col + 1}' is full! Choose another column or loose your turn #{player1.name}"
-      @mover = true
-    else
-      @mover = false
-      board.layout
-    end
-  end
-
-  def p1_move(col = player1.move, color = player1.color_piece, choice = [])
-    choice << col
-    col = choice.join.to_i
-    return 'Woo' if board.check_win(col, color)
-
-    player1_turn(col)
-  end
-
-  def p2_move(col = player2.move, color = player2.color_piece, choice = [])
-    choice << col
-    col = choice.join.to_i
+    board.layout
     return 'Win!' if board.check_win(col, color)
+  end
 
-    player2_turn(col)
+  def player2_turn(col, board = @board, color = player2.color_piece)
+    @player2.insert_col(board, col)
+    if board.column_full?(col)
+      puts "Column '#{col + 1}' is full! Choose another column or loose your turn #{player1.name}"
+    end
+    board.layout
+    return 'Win!' if board.check_win(col, color)
+  end
+
+  def p1_move(col = player1.move, choice = [])
+    choice << col
+    col = choice.join.to_i
+
+    return @over = true if player1_turn(col) == 'Win!'
+  end
+
+  def p2_move(col = player2.move, choice = [])
+    choice << col
+    col = choice.join.to_i
+
+    return @over = true if player2_turn(col) == 'Win!'
   end
 
   def turn(board = @board)
-    until board.board_full?
-      puts "Make a move #{player1.name}"
-      return "#{player1.name} Wins" if p1_move(player1.move) == 'Woo'
+    until @over == true || board.board_full?
+      unless @mover == true
+        puts "Make a move #{player1.name}"
+        p1_move
+        @mover = true
+        if @over == true
+          puts "#{player1.name} Wins!"
+          return
+        end
+      end
 
-      puts "Make a move #{player2.name}"
-      return "#{player2.name} Wins" if p2_move(player2.move) == 'Win!'
+      unless @mover == false
+        puts "Make a move #{player2.name}"
+        p2_move
+        @mover = false
+        if @over == true
+          puts "#{player2.name} Wins!"
+          return
+        end
+      end
     end
-    puts 'Game Over'
+    puts 'Game over!'
   end
 end
