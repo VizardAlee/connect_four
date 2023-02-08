@@ -6,6 +6,4 @@ require_relative 'lib/player'
 require_relative 'lib/pieces'
 
 game = Game.new
-game.create_player
-game.choose_piece
-game.turn
+game.play

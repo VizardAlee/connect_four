@@ -29,14 +29,16 @@ class Game
 
   def choose_piece
     puts "Choose your color #{player1.name}:"
-    @player1.choose_piece(gets.chomp)
+    @player1.choose_piece(gets.chomp.downcase)
     case player1.color_piece
     when "\u{25A1}"
       @player2.choose_piece('black')
     when "\u{25A0}"
       @player2.choose_piece('white')
+    else
+      puts "Please choose 'Black' or 'White'"
+      choose_piece
     end
-    puts "#{player1.name}'s piece is #{player1.color_piece} and #{player2.name}'s piece is #{player2.color_piece}"
   end
 
   def player1_turn(col, board = @board, color = player1.color_piece)
@@ -58,17 +60,27 @@ class Game
   end
 
   def p1_move(col = player1.move, choice = [])
-    choice << col
-    col = choice.join.to_i
+    begin
+      choice << col
+      col = choice.join.to_i
 
-    return @over = true if player1_turn(col) == 'Win!'
+      return @over = true if player1_turn(col) == 'Win!'
+    rescue
+      puts 'Please put in the right column number!'
+      p1_move
+    end
   end
 
   def p2_move(col = player2.move, choice = [])
-    choice << col
-    col = choice.join.to_i
+    begin
+      choice << col
+      col = choice.join.to_i
 
-    return @over = true if player2_turn(col) == 'Win!'
+      return @over = true if player2_turn(col) == 'Win!'
+    rescue
+      puts 'Please put in the right column number!'
+      p2_move
+    end
   end
 
   def turn(board = @board)
@@ -94,5 +106,14 @@ class Game
       end
     end
     puts 'Game over!'
+  end
+
+  def play
+    puts 'WELCOME TO CONNECT FOUR!!'
+    create_player
+    choose_piece
+    puts "#{player1.name}'s piece is #{player1.color_piece} and #{player2.name}'s piece is #{player2.color_piece}"
+    turn
+    puts 'Game Over!'
   end
 end
